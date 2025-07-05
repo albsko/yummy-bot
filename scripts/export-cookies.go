@@ -19,14 +19,6 @@ import (
 	"golang.org/x/crypto/pbkdf2"
 )
 
-type SameSite string
-
-const (
-	SameSiteStrict SameSite = "Strict"
-	SameSiteLax    SameSite = "Lax"
-	SameSiteNone   SameSite = "None"
-)
-
 type Cookie struct {
 	Name     string   `json:"name"`
 	Value    string   `json:"value"`
@@ -49,6 +41,14 @@ func NewCookie(name, value string) Cookie {
 		SameSite: SameSiteLax,
 	}
 }
+
+type SameSite string
+
+const (
+	SameSiteStrict SameSite = "Strict"
+	SameSiteLax    SameSite = "Lax"
+	SameSiteNone   SameSite = "None"
+)
 
 func (c *Cookie) setSameSite(samesite int) {
 	switch samesite {

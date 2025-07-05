@@ -1,4 +1,4 @@
-module github.com/albsko/go-get-cookies
+module github.com/albsko/yummy-bot
 
 go 1.24.4
 
