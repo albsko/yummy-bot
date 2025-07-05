@@ -31,8 +31,8 @@ type Cookie struct {
 	SameSite SameSite `json:"sameSite,omitempty"`
 }
 
-func NewCookie(name, value string) Cookie {
-	return Cookie{
+func NewCookie(name, value string) *Cookie {
+	return &Cookie{
 		Name:     name,
 		Value:    value,
 		Path:     "/",
@@ -63,7 +63,15 @@ func (c *Cookie) setSameSite(samesite int) {
 	}
 }
 
-type Cookies []Cookie
+func (c *Cookie) setExpires(expires int64) {
+	if expires > 0 {
+		c.Expires = (expires / 1000000) - 11644473600
+	} else {
+		c.Expires = 0
+	}
+}
+
+type Cookies []*Cookie
 
 func main() {
 	var cookiePath string
@@ -132,9 +140,9 @@ func main() {
 		cookie := NewCookie(name, value)
 		cookie.Domain = host
 		cookie.Path = path
-		cookie.Expires = expires
 		cookie.Secure = secure != 0
 		cookie.HTTPOnly = httponly != 0
+		cookie.setExpires(expires)
 		cookie.setSameSite(samesite)
 
 		cookies = append(cookies, cookie)
