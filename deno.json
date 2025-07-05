@@ -1,0 +1,11 @@
+{
+  "imports": {
+    "@std/path": "jsr:@std/path@^1.1.1",
+    "playwright": "npm:playwright@^1.53.2"
+  },
+  "nodeModulesDir": "auto",
+  "tasks": {
+    "export-cookies": "go build -o ./.bin/export-cookies ./scripts/export-cookies.go && ./.bin/export-cookies",
+    "codegen": "deno run -A ./scripts/codegen.js"
+  }
+}
