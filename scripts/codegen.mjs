@@ -1,6 +1,9 @@
 import { chromium, devices } from "npm:playwright";
 import { fromFileUrl, join } from "jsr:@std/path";
+import { importCookies } from "./import-cookies.mjs";
+import { parseArgs } from "@std/cli/parse-args";
 
+// Paths
 const __rootdir = fromFileUrl(new URL("..", import.meta.url));
 const codegenDir = join(__rootdir, ".codegen");
 const outputFile = join(
@@ -8,7 +11,12 @@ const outputFile = join(
   `output-${Math.floor(Date.now() / 1000)}.js`,
 );
 
-const url = Deno.args[0] || "https://example.com";
+// Args
+const args = parseArgs(Deno.args);
+const url = args._[0] ?? "https://example.com";
+const cookiesPath = args.cookies ?? false;
+
+// Vars
 const deviceName = null; // e.g. "iPhone 11";
 const language = "javascript";
 
@@ -34,6 +42,7 @@ if (deviceName) {
   Object.assign(contextOptions, device);
 }
 
+// Codegen
 const browser = await chromium.launch(launchOptions);
 const context = await browser.newContext(contextOptions);
 
@@ -45,3 +54,22 @@ await context._enableRecorder({
 
 const page = await context.newPage();
 await page.goto(url);
+
+// Cookies
+if (cookiesPath) {
+  const cookies = cookiesPath === true
+    ? await importCookies()
+    : await importCookies(cookiesPath);
+
+  for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i];
+    // console.log(`\n[${i}] Adding cookie:`, cookie);
+
+    try {
+      await context.addCookies([cookie]);
+    } catch (err) {
+      console.error(`failed to add cookie [${i}]`, cookie);
+      console.error("Error:", err);
+    }
+  }
+}

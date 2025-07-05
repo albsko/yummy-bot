@@ -22,7 +22,6 @@ import (
 type Cookie struct {
 	Name     string   `json:"name"`
 	Value    string   `json:"value"`
-	URL      string   `json:"url"`
 	Domain   string   `json:"domain"`
 	Path     string   `json:"path"`
 	Expires  int64    `json:"expires"`
