@@ -71,7 +71,7 @@ const context = await browser.newContext(contextOptions);
 
 await context.addInitScript(() => { // spoof
   Object.defineProperty(navigator, "webdriver", { get: () => false });
-  window.chrome = { runtime: {} };
+  globalThis.chrome = { runtime: {} };
   Object.defineProperty(navigator, "languages", { get: () => ["en-US", "en"] });
   Object.defineProperty(navigator, "plugins", { get: () => [1, 2, 3] });
 });
