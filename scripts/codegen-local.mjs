@@ -16,7 +16,8 @@ const outputFile = join(
 const args = parseArgs(Deno.args);
 const url = args._[0] ?? "about:blank";
 const verbose = (args.v || args.verbose) ?? false;
-const cookiesPath = (args.c || args.cookies) ?? false;
+const cookiesPath = (args.c || args.cookies) ??
+  "$HOME/Library/Application\ Support/Google/Chrome/Default/Cookies";
 const excludeDomainPattern = (args.e || args.exclude) ?? null;
 
 // Vars

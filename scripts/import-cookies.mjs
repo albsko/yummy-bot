@@ -6,8 +6,9 @@ export const importCookies = async (
 ) => {
   const args = ["task", "export-cookies"];
   if (cookiesPath && cookiesPath.trim() !== "") {
-    args.push(cookiesPath);
+    args.push(`-path=${cookiesPath}`);
   }
+  console.log(args);
 
   const process = new Deno.Command("deno", {
     args,
@@ -65,7 +66,8 @@ export const importCookies = async (
 };
 
 if (import.meta.main) { // if executed directly
-  const cookiesPath = Deno.args[0] || "";
+  const cookiesPath = Deno.args[0] ||
+    "$HOME/Library/Application\ Support/Google/Chrome/Default/Cookies";
   const excludeDomainPattern = Deno.args[1] || null;
   const cookies = await importCookies(cookiesPath, excludeDomainPattern);
   console.log(JSON.stringify(cookies, null, 2));

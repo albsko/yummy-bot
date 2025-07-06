@@ -13,7 +13,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"path/filepath"
 
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/crypto/pbkdf2"
@@ -73,22 +72,26 @@ func (c *Cookie) setExpires(expires int64) {
 type Cookies []*Cookie
 
 func main() {
-	var cookiePath string
+	var cookiesPath string
 	flag.StringVar(
-		&cookiePath,
+		&cookiesPath,
 		"path",
-		filepath.Join(os.Getenv("HOME"), "Library/Application Support/Google/Chrome/Default/Cookies"),
-		"path to Cookies file e.g. ~/Library/Application Support/Google/Chrome/Default/Cookies",
+		"",
+		"path to Cookies file e.g. $HOME/Library/Application Support/Google/Chrome/Default/Cookies",
 	)
 	flag.Parse()
+	if cookiesPath == "" {
+		log.Println("missing required flag: -path")
+		flag.Usage()
+		os.Exit(1)
+	}
 
-	log.Printf("Using cookie path: %q\n", cookiePath)
+	cookiesPath = os.ExpandEnv(cookiesPath)
+	if _, err := os.Stat(cookiesPath); os.IsNotExist(err) {
+		log.Fatalf("cookies file doesn't exist: %s", cookiesPath)
+	}
 
 	decryptionKey := getDecryptionKey()
-
-	if _, err := os.Stat(cookiePath); os.IsNotExist(err) {
-		log.Fatalf("cookies file doesn't exist: %s", cookiePath)
-	}
 
 	tmpFile, err := os.CreateTemp("", "cookies*.db")
 	if err != nil {
@@ -96,7 +99,7 @@ func main() {
 	}
 	defer os.Remove(tmpFile.Name())
 
-	src, err := os.Open(cookiePath)
+	src, err := os.Open(cookiesPath)
 	if err != nil {
 		log.Fatal("failed opening cookies db")
 	}
