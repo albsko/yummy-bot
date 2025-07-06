@@ -1,4 +1,4 @@
 ### yummy-bot
 
 #### TODO
-1. investigate best args for codegen
+1. implement direct cookies import in golang
