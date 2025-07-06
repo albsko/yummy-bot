@@ -15,6 +15,7 @@ const outputFile = join(
 const args = parseArgs(Deno.args);
 const url = args._[0] ?? "https://example.com";
 const cookiesPath = args.cookies ?? false;
+const excludeDomainPattern = args.exclude ?? null;
 
 // Vars
 const deviceName = null; // e.g. "iPhone 11";
@@ -59,7 +60,7 @@ await page.goto(url);
 if (cookiesPath) {
   const cookies = cookiesPath === true
     ? await importCookies()
-    : await importCookies(cookiesPath);
+    : await importCookies(cookiesPath, excludeDomainPattern);
 
   for (let i = 0; i < cookies.length; i++) {
     const cookie = cookies[i];
@@ -68,8 +69,7 @@ if (cookiesPath) {
     try {
       await context.addCookies([cookie]);
     } catch (err) {
-      console.error(`failed to add cookie [${i}]`, cookie);
-      console.error("Error:", err);
+      console.error(`failed to add cookie [${i}]\n\nerr:${err}`, cookie, err);
     }
   }
 }
