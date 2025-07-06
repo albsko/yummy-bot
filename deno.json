@@ -6,7 +6,7 @@
   },
   "nodeModulesDir": "auto",
   "tasks": {
-    "export-cookies": "go build -o ./.bin/export-cookies ./scripts/export-cookies.go && ./.bin/export-cookies",
+    "export-cookies": "go build -o ./.bin/cookies_export ./scripts/cookies_export && ./.bin/cookies_export",
     "codegen": "deno run -A ./scripts/codegen.mjs"
   }
 }
