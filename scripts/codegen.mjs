@@ -18,8 +18,11 @@ const defaultCookiesPath =
 const args = parseArgs(Deno.args);
 const url = args._[0] ?? "about:blank";
 const verbose = (args.v || args.verbose) ?? false;
-let cookiesPath = (args.c || args.cookies) ?? defaultCookiesPath;
-cookiesPath = cookiesPath === true ? defaultCookiesPath : cookiesPath;
+const resetUserData = (args.r || args.reset) ?? false;
+const cookiesPathArg = (args.c || args.cookies) ?? false;
+const cookiesPath = cookiesPathArg === true
+  ? defaultCookiesPath
+  : cookiesPathArg;
 const excludeDomainPattern = (args.e || args.exclude) ?? null;
 
 // Vars
@@ -39,6 +42,9 @@ const chromeArgs = [
 ];
 
 // Chrome
+if (resetUserData) {
+  await new Deno.Command("rm", { args: ["-rf", userDataDir] }).output();
+}
 await new Deno.Command("killall", { args: ["Google Chrome"] }).output();
 const proc = new Deno.Command(chromePath, {
   args: chromeArgs,
