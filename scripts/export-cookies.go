@@ -84,8 +84,7 @@ func main() {
 
 	log.Printf("Using cookie path: %q\n", cookiePath)
 
-	password := getChromePassword()
-	key := pbkdf2.Key(password, []byte("saltysalt"), 1003, 16, sha1.New)
+	decryptionKey := getDecryptionKey()
 
 	if _, err := os.Stat(cookiePath); os.IsNotExist(err) {
 		log.Fatalf("cookies file doesn't exist: %s", cookiePath)
@@ -130,7 +129,7 @@ func main() {
 		}
 
 		if value == "" && len(encrypted) > 0 {
-			val, err := decryptCookie(encrypted, key)
+			val, err := decryptCookie(encrypted, decryptionKey)
 			if err == nil {
 				value = val
 			}
@@ -184,11 +183,12 @@ func decryptCookie(encrypted, key []byte) (string, error) {
 	return string(decrypted), nil
 }
 
-func getChromePassword() []byte {
+func getDecryptionKey() []byte {
 	cmd := exec.Command("/usr/bin/security", "-q", "find-generic-password", "-w", "-a", "Chrome", "-s", "Chrome Safe Storage")
-	output, err := cmd.Output()
+	password, err := cmd.Output()
 	if err != nil {
-		return []byte("peanuts")
+		password = []byte("peanuts")
 	}
-	return bytes.TrimSpace(output)
+	password = bytes.TrimSpace(password)
+	return pbkdf2.Key(password, []byte("saltysalt"), 1003, 16, sha1.New)
 }
