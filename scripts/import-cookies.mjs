@@ -33,12 +33,12 @@ export const importCookies = async (
     Deno.exit(1);
   }
 
-  const excludeDomainRegex = excludeDomainPattern
+  const excludeDomainRegExp = excludeDomainPattern
     ? (() => {
       try {
         return new RegExp(excludeDomainPattern.trim());
       } catch (e) {
-        console.error("invalid exclude pattern:", e.message);
+        console.error("invalid exclude domain pattern:", e.message);
         Deno.exit(1);
       }
     })()
@@ -46,7 +46,7 @@ export const importCookies = async (
 
   const playwrightCookies = rawCookies
     .filter((cookie) =>
-      !excludeDomainRegex || !excludeDomainRegex.test(cookie.domain)
+      !excludeDomainRegExp || !excludeDomainRegExp.test(cookie.domain)
     )
     .map((cookie) =>
       Object.freeze({
