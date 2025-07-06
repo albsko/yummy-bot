@@ -11,13 +11,15 @@ const outputFile = join(
   codegenDir,
   `output-${Math.floor(Date.now() / 1000)}.js`,
 );
+const defaultCookiesPath =
+  "$HOME/Library/Application\ Support/Google/Chrome/Default/Cookies";
 
 // Args
 const args = parseArgs(Deno.args);
 const url = args._[0] ?? "about:blank";
 const verbose = (args.v || args.verbose) ?? false;
-const cookiesPath = (args.c || args.cookies) ??
-  "$HOME/Library/Application\ Support/Google/Chrome/Default/Cookies";
+let cookiesPath = (args.c || args.cookies) ?? defaultCookiesPath;
+cookiesPath = cookiesPath === true ? defaultCookiesPath : cookiesPath;
 const excludeDomainPattern = (args.e || args.exclude) ?? null;
 
 // Vars
@@ -96,9 +98,7 @@ await page.goto(url);
 
 // Cookies
 if (cookiesPath) {
-  const cookies = cookiesPath === true
-    ? await importCookies("", excludeDomainPattern)
-    : await importCookies(cookiesPath, excludeDomainPattern);
+  const cookies = await importCookies(cookiesPath, excludeDomainPattern);
 
   for (let i = 0; i < cookies.length; i++) {
     const cookie = cookies[i];

@@ -8,7 +8,6 @@ export const importCookies = async (
   if (cookiesPath && cookiesPath.trim() !== "") {
     args.push(`-path=${cookiesPath}`);
   }
-  console.log(args);
 
   const process = new Deno.Command("deno", {
     args,
